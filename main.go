@@ -57,12 +57,13 @@ func main() {
 
 	for index, dir := range dirArray {
 		if index%20 == 0 {
-			fmt.Println("thread waiting...........", index)
+			fmt.Println("thread waiting...........", index, "/", len(dirArray), fmt.Sprintf("%d%", (index/len(dirArray))*100))
 			readLock.Wait()
 		}
 		readLock.Add(1)
 		go syncExecCommand(dir)
 	}
+	fmt.Println("thread waiting........... last 20 files!")
 	readLock.Wait()
 	//execCommand("go version")
 	serverExit()

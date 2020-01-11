@@ -7,6 +7,11 @@ import (
 	"io"
 	"os/exec"
 	"strings"
+	"sync"
+)
+
+var (
+	readLock sync.WaitGroup
 )
 
 //读取根目录下所有的文件夹
@@ -17,16 +22,26 @@ func readRootDir(dirPath string) {
 		fmt.Println(err.Error())
 		return
 	}
-	for _, value := range *rootDirIn {
-		contentArrayIn,err:=execCommand("cmd","/C",fmt.Sprintf("git -C %s pull", strings.Join([]string{masterDirPath, value}, "\\")))
-		if err != nil {
-			fmt.Println(err.Error())
-		}else{
-			for _, item := range *contentArrayIn {
-				fmt.Println(item)
-			}
+	for index, value := range *rootDirIn {
+		readLock.Add(1)
+		go syncExecCommand(value)
+		if index%5 == 0 {
+			readLock.Wait()
 		}
 		readRootDir(fmt.Sprintf("%s/%s", dirPath, value))
+	}
+	readLock.Wait()
+}
+
+func syncExecCommand(value string) {
+	defer readLock.Done()
+	contentArrayIn, err := execCommand("cmd", "/C", fmt.Sprintf("git -C %s pull", strings.Join([]string{masterDirPath, value}, "\\")))
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		for _, item := range *contentArrayIn {
+			fmt.Println(item)
+		}
 	}
 }
 

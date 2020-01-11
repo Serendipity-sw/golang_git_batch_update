@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/swgloomy/gutil"
 	"io"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -34,11 +35,13 @@ func syncExecCommand(value string) {
 	defer readLock.Done()
 	contentArrayIn, err := execCommand("cmd", "/C", fmt.Sprintf("git -C %s pull", value))
 	if err != nil {
-		fmt.Println(123)
 		fmt.Println(err.Error())
 	} else {
 		for _, item := range *contentArrayIn {
-			fmt.Println(item)
+			if strings.HasPrefix(item, "Updating") {
+				fmt.Println(value)
+				os.RemoveAll(value)
+			}
 		}
 	}
 }
@@ -62,6 +65,5 @@ func execCommand(commandName string, params ...string) (*[]string, error) {
 		resultContentArray = append(resultContentArray, line)
 	}
 	cmd.Wait()
-	fmt.Println(resultContentArray)
 	return &resultContentArray, nil
 }

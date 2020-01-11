@@ -18,15 +18,23 @@ func readRootDir(dirPath string) {
 		return
 	}
 	for _, value := range *rootDirIn {
-		dirArray = append(dirArray, value)
+		bo, err := gutil.PathExists(strings.Join([]string{dirPath, value, ".git"}, "\\"))
+		if err != nil {
+			fmt.Println(err.Error())
+			continue
+		}
+		if bo {
+			dirArray = append(dirArray, strings.Join([]string{dirPath, value}, "\\"))
+		}
 		readRootDir(fmt.Sprintf("%s/%s", dirPath, value))
 	}
 }
 
 func syncExecCommand(value string) {
 	defer readLock.Done()
-	contentArrayIn, err := execCommand("cmd", "/C", fmt.Sprintf("git -C %s pull", strings.Join([]string{masterDirPath, value}, "\\")))
+	contentArrayIn, err := execCommand("cmd", "/C", fmt.Sprintf("git -C %s pull", value))
 	if err != nil {
+		fmt.Println(123)
 		fmt.Println(err.Error())
 	} else {
 		for _, item := range *contentArrayIn {

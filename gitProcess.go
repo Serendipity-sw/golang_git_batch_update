@@ -7,11 +7,6 @@ import (
 	"io"
 	"os/exec"
 	"strings"
-	"sync"
-)
-
-var (
-	readLock sync.WaitGroup
 )
 
 //读取根目录下所有的文件夹
@@ -22,15 +17,10 @@ func readRootDir(dirPath string) {
 		fmt.Println(err.Error())
 		return
 	}
-	for index, value := range *rootDirIn {
-		readLock.Add(1)
-		go syncExecCommand(value)
-		if index%5 == 0 {
-			readLock.Wait()
-		}
+	for _, value := range *rootDirIn {
+		dirArray = append(dirArray, value)
 		readRootDir(fmt.Sprintf("%s/%s", dirPath, value))
 	}
-	readLock.Wait()
 }
 
 func syncExecCommand(value string) {

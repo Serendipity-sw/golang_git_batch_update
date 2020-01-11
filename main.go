@@ -7,11 +7,14 @@ import (
 	"github.com/guotie/deferinit"
 	"os"
 	"runtime"
+	"sync"
 )
 
 var (
 	configFn      = flag.String("config", "./config.json", "config file path")
 	masterDirPath string
+	readLock      sync.WaitGroup //获取锁
+	dirArray      []string       //整合所有文件夹
 )
 
 /**
@@ -51,7 +54,16 @@ func serverExit() {
 func main() {
 	serverRun(*configFn)
 	readRootDir(masterDirPath)
-//execCommand("go version")
+
+	for index, dir := range dirArray {
+		if index%10 == 0 {
+			readLock.Wait()
+		}
+		readLock.Add(1)
+		go syncExecCommand(dir)
+	}
+	readLock.Wait()
+	//execCommand("go version")
 	serverExit()
 	os.Exit(0)
 	fmt.Println("run over!")

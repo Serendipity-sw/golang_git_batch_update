@@ -56,7 +56,7 @@ func main() {
 	readRootDir(masterDirPath)
 
 	for index, dir := range dirArray {
-		if index%10 == 0 {
+		if index%20 == 0 {
 			readLock.Wait()
 		}
 		readLock.Add(1)

@@ -57,7 +57,7 @@ func main() {
 
 	for index, dir := range dirArray {
 		if index%20 == 0 {
-			fmt.Println("thread waiting...........", index, "/", len(dirArray), fmt.Sprintf("      %d%", (index/len(dirArray))*100))
+			fmt.Println("thread waiting...........", index, "/", len(dirArray))
 			readLock.Wait()
 		}
 		readLock.Add(1)

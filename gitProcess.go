@@ -39,7 +39,6 @@ func syncExecCommand(value string) {
 	} else {
 		for _, item := range *contentArrayIn {
 			if strings.HasPrefix(item, "Updating") {
-				fmt.Println(value)
 				os.RemoveAll(value)
 			}
 		}

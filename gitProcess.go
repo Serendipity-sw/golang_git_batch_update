@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/swgloomy/gutil"
 	"io"
-	"os"
 	"os/exec"
 	"strings"
 )
@@ -38,9 +37,10 @@ func syncExecCommand(value string) {
 		fmt.Println(err.Error())
 	} else {
 		for _, item := range *contentArrayIn {
-			if strings.HasPrefix(item, "Updating") {
-				os.RemoveAll(value)
-			}
+			//if strings.HasPrefix(item, "Updating") {
+			//	os.RemoveAll(value)
+			//}
+			fmt.Println(item)
 		}
 	}
 }
